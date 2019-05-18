@@ -1,7 +1,7 @@
 const Sequelize = require("Sequelize");
 const db = new Sequelize("postgres://localhost:5432/plantr");
 
-const gardener = db.define("gardener", {
+const Gardener = db.define("gardener", {
   name: {
     type: Sequelize.STRING,
     allowNull: false
@@ -12,7 +12,7 @@ const gardener = db.define("gardener", {
   }
 });
 
-const plot = db.define("plot", {
+const Plot = db.define("plot", {
   size: {
     type: Sequelize.INTEGER,
     allowNull: false
@@ -23,7 +23,7 @@ const plot = db.define("plot", {
   }
 });
 
-const vegetable = db.define("vegetable", {
+const Vegetable = db.define("vegetable", {
   name: {
     type: Sequelize.STRING
   },
@@ -35,4 +35,16 @@ const vegetable = db.define("vegetable", {
   }
 });
 
-module.exports = db;
+Plot.belongsTo(Gardener);
+Gardener.hasMany(Plot);
+
+Vegetable.belongsToMany(Plot, { through: "vegetable_plot" });
+Plot.belongsToMany(Vegetable, { through: "vegetable_plot" });
+
+Gardener.belongsTo(Vegetable, { as: "favorite_vegetable" });
+module.exports = {
+  Vegetable,
+  Plot,
+  Gardener,
+  db
+};
